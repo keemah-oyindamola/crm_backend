@@ -14,21 +14,46 @@ enum Role {
 }
 
 model Company {
-  id        String   @id @default(uuid())
+  id        String     @id @default(uuid())
   name      String
-  email     String   @unique
-  plan      String   @default("Starter")
+  email     String     @unique
+  plan      String     @default("Starter")
   users     User[]
-  createdAt DateTime @default(now())
+  customers Customer[]
+  createdAt DateTime   @default(now())
 }
 
 model User {
-  id        String   @id @default(uuid())
+  id        String     @id @default(uuid())
   companyId String
-  company   Company  @relation(fields: [companyId], references: [id])
+  company   Company    @relation(fields: [companyId], references: [id])
   name      String
-  email     String   @unique
+  email     String     @unique
   password  String
-  role      Role     @default(STAFF)
-  createdAt DateTime @default(now())
+  role      Role       @default(STAFF)
+  createdAt DateTime   @default(now())
+  customers Customer[]
+}
+
+enum CustomerStatus {
+  LEAD
+  QUALIFIED
+  PROPOSAL
+  NEGOTIATION
+  WON
+  LOST
+}
+
+model Customer {
+  id         String         @id @default(uuid())
+  companyId  String
+  company    Company        @relation(fields: [companyId], references: [id])
+  name       String
+  email      String
+  phone      String?
+  status     CustomerStatus @default(LEAD)
+  assignedTo String?
+  assignee   User?          @relation(fields: [assignedTo], references: [id])
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
 }
